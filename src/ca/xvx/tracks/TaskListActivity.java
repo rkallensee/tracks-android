@@ -2,6 +2,8 @@ package ca.xvx.tracks;
 
 import ca.xvx.tracks.preferences.PreferenceConstants;
 
+import java.lang.reflect.Field;
+
 import android.util.Log;
 
 import android.app.ExpandableListActivity;
@@ -19,12 +21,13 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.widget.ExpandableListView;
 import android.widget.Toast;
 
 public class TaskListActivity extends ExpandableListActivity {
 	private static final String TAG = "TaskListActivity";
-	
+
 	private TaskListAdapter _tla;
 	private SharedPreferences _prefs;
 	private Handler _commHandler;
@@ -36,23 +39,25 @@ public class TaskListActivity extends ExpandableListActivity {
 	private static final int EDIT_CONTEXT = 3;
 	private static final int NEW_PROJECT = 4;
 	private static final int EDIT_PROJECT = 4;
-	
+
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		Log.v(TAG, "Created!");
-		
+
 		_prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
 		TracksCommunicator comm = new TracksCommunicator(_prefs);
 		comm.start();
 		_commHandler = TracksCommunicator.getHandler();
-		
+
 		_tla = new TaskListAdapter();
 		setListAdapter(_tla);
-		
+
+		forceActionbarOverflowMenu();
+
 		if(!_prefs.getBoolean(PreferenceConstants.RUN, false)) {
 			Log.i(TAG, "This appears to be our first run; edit preferences");
 			startActivityForResult(new Intent(this, SettingsActivity.class), SETTINGS);
@@ -103,7 +108,7 @@ public class TaskListActivity extends ExpandableListActivity {
 					}
 				}
 			});
-		
+
 		Message.obtain(_commHandler, 0, a).sendToTarget();
 	}
 
@@ -135,7 +140,7 @@ public class TaskListActivity extends ExpandableListActivity {
 		String desc = t.getDescription();
 		Context context = getExpandableListView().getContext();
 		TracksAction a;
-		
+
 		switch(item.getItemId()) {
 		case R.id.edit_task:
 			Intent i = new Intent(this, TaskEditorActivity.class);
@@ -145,7 +150,7 @@ public class TaskListActivity extends ExpandableListActivity {
 		case R.id.delete_task:
 			a = new TracksAction(TracksAction.ActionType.DELETE_TASK, t,
 								 _tla.getNotifyHandler());
-			Message.obtain(_commHandler, 0, a).sendToTarget();			
+			Message.obtain(_commHandler, 0, a).sendToTarget();
 			return true;
 		case R.id.done_task:
 			t.setDone(true);
@@ -164,7 +169,7 @@ public class TaskListActivity extends ExpandableListActivity {
 			Log.v(TAG, "Returned from settings");
 			refreshList();
 		}
-		
+
 		if(requestCode == NEW_TASK || requestCode == EDIT_TASK) {
 			Log.v(TAG, "Returned from edit");
 			if(resultCode == TaskEditorActivity.SAVED) {
@@ -197,7 +202,7 @@ public class TaskListActivity extends ExpandableListActivity {
 		Intent i = new Intent(this, TaskEditorActivity.class);
 		i.putExtra("task", t.getId());
 		startActivityForResult(i, EDIT_TASK);
-		
+
 		return true;
 	}
 
@@ -236,5 +241,19 @@ public class TaskListActivity extends ExpandableListActivity {
 		super.onConfigurationChanged(newConfig);
 		Log.i(TAG, "Configuration changed.");
 		getExpandableListView().requestLayout();
+	}
+
+	private void forceActionbarOverflowMenu() {
+		// Force overflow control for action bar even if the device has got a physical menu button.
+		try {
+			ViewConfiguration config = ViewConfiguration.get(this);
+			Field menuKeyField = ViewConfiguration.class.getDeclaredField("sHasPermanentMenuKey");
+			if(menuKeyField != null) {
+				menuKeyField.setAccessible(true);
+				menuKeyField.setBoolean(config, false);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }
