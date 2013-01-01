@@ -17,8 +17,8 @@
 	<activity android:name="ContextEditorActivity" />
 	<activity android:name="ProjectEditorActivity" />
   </application>
- 
-  <uses-sdk android:minSdkVersion="6" 
-  			android:targetSdkVersion="8" />
+
+  <uses-sdk android:minSdkVersion="6"
+  			android:targetSdkVersion="13" />
   <uses-permission android:name="android.permission.INTERNET"></uses-permission>
-</manifest> 
+</manifest>
