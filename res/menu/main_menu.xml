@@ -2,22 +2,20 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
   <item android:id="@+id/MENU_refresh"
         android:showAsAction="ifRoom"
-        android:icon="@drawable/ic_menu_refresh"
+        android:icon="@drawable/navigation_refresh"
         android:title="@string/MENU_refresh" />
   <item android:id="@+id/MENU_add"
         android:showAsAction="ifRoom"
-        android:icon="@android:drawable/ic_menu_add"
+        android:icon="@drawable/content_new"
         android:title="@string/MENU_add" />
   <item android:id="@+id/MENU_addcontext"
         android:showAsAction="ifRoom"
-        android:icon="@android:drawable/ic_menu_add"
         android:title="@string/MENU_addcontext" />
   <item android:id="@+id/MENU_addproject"
         android:showAsAction="ifRoom"
-        android:icon="@android:drawable/ic_menu_add"
         android:title="@string/MENU_addproject" />
   <item android:id="@+id/MENU_settings"
         android:showAsAction="ifRoom"
-        android:icon="@android:drawable/ic_menu_preferences"
+        android:icon="@drawable/action_settings"
         android:title="@string/MENU_settings" />
 </menu>
